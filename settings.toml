@@ -1,0 +1,11 @@
+[main]
+timedelta = 600
+
+[vk]
+phone = ""
+pass = "#"
+page_id = []
+
+[tg]
+token = ""
+target_id = 
