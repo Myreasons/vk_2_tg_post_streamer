@@ -2,7 +2,6 @@ import toml
 from vk_listener import VkListener, VkPost
 import time
 from tg_pooler import TgBot
-import sys
 import logging
 
 
@@ -24,6 +23,20 @@ def get_actual_posts(posts, timedelta: int):
                     if attach['type'] == 'photo':
                         photos.append(attach['photo']['sizes'][-1]['url'])
 
+            if 'copy_history' in post.keys():
+                for tmp_post in post['copy_history']:
+                    tmp_photos = []
+                    if 'attachments' in post.keys():
+                        for tmp_attach in tmp_post['attachments']:
+                            if attach['type'] == 'photo':
+                                tmp_photos.append(tmp_attach['photo']['sizes'][-1]['url'])
+
+                    res_list.append(VkPost(date=tmp_post['date'],
+                                           from_id=tmp_post['from_id'],
+                                           post_type=tmp_post['post_type'],
+                                           text=tmp_post['text'],
+                                           files=tmp_photos)
+                                    )
 
             res_list.append(VkPost(date=post['date'],
                                    from_id=post['from_id'],
@@ -54,8 +67,5 @@ if __name__ == '__main__':
     logging.info(f'Start working with time delta = {timedelta}')
     while True:
         logging.info('Run pooling')
-        try:
-            run(timedelta)
-            time.sleep(timedelta)
-        except Exception as e:
-            logging.error(f'run was crushed with erorr {e}')
+        run(timedelta)
+        time.sleep(timedelta)
